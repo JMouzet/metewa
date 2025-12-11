@@ -7,8 +7,26 @@
     <link rel="stylesheet" href="style.css" />
     <link rel="manifest" href="manifest.json" />
     <link rel="icon" href="/icons/icon.svg" />
+    <script src="app.js" defer></script>
   </head>
   <body>
-    It updates too!
+    <input type="text" id="city-input" placeholder="Enter city name" />
+    <button id="search-btn">Search</button>
+    <div class="loading hidden" id="loading">Loading...</div>
+    <div class="weather-section hidden" id="weather-section">
+      City name: <span id="city-name"></span><br />
+      Temperature: <span id="temperature"></span><br />
+      Weather: <span id="weather-icon"></span><br />
+      Wind: <span id="wind"></span><br />
+      Humidity: <span id="humidity"></span><br />
+      Feels like: <span id="feels-like"></span><br />
+      <div class="hourly-list" id="hourly-list"></div>
+    </div>
+    <div class="notify">
+      <button id="notify-btn">...</button>
+    </div>
+    <div class="error">
+      <span class="hidden" id="error-message"></span>
+    </div>
   </body>
 </html>

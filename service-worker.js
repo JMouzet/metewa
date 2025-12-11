@@ -1,6 +1,6 @@
 // ===== CONFIGURATION =====
 // Modifier ces valeurs pour votre application
-const CACHE_NAME = 'metewa-v1';
+const CACHE_NAME = 'metewa-v1.2.0';
 const ASSETS = [
   '/',
   '/index.html',
