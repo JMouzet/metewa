@@ -1,31 +1,17 @@
 // ===== CONFIGURATION =====
 // Modifier ces valeurs pour votre application
-const CACHE_NAME = 'metewa-v1.2.0';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/manifest.json',
-  '/icons/icon-72.png',
-  '/icons/icon-96.png',
-  '/icons/icon-128.png',
-  '/icons/icon-144.png',
-  '/icons/icon-152.png',
-  '/icons/icon-192.png',
-  '/icons/icon-384.png',
-  '/icons/icon-512.png',
-];
+const CACHE_NAME = "metewa-v1.3.0";
+const ASSETS = ["/", "/index.html", "/style.css", "/app.js", "/manifest.json", "/icons/icon-72.png", "/icons/icon-96.png", "/icons/icon-128.png", "/icons/icon-144.png", "/icons/icon-152.png", "/icons/icon-192.png", "/icons/icon-384.png", "/icons/icon-512.png"];
 
 // ===== INSTALL =====
 // Mise en cache initiale des fichiers statiques
-self.addEventListener('install', (event) => {
-  console.log('[SW] Installation...');
+self.addEventListener("install", (event) => {
+  console.log("[SW] Installation...");
   event.waitUntil(
     caches
       .open(CACHE_NAME)
       .then((cache) => {
-        console.log('[SW] Mise en cache des assets');
+        console.log("[SW] Mise en cache des assets");
         return cache.addAll(ASSETS);
       })
       .then(() => {
@@ -37,8 +23,8 @@ self.addEventListener('install', (event) => {
 
 // ===== ACTIVATE =====
 // Nettoyage des anciens caches
-self.addEventListener('activate', (event) => {
-  console.log('[SW] Activation...');
+self.addEventListener("activate", (event) => {
+  console.log("[SW] Activation...");
   event.waitUntil(
     caches
       .keys()
@@ -47,7 +33,7 @@ self.addEventListener('activate', (event) => {
           keys
             .filter((key) => key !== CACHE_NAME)
             .map((key) => {
-              console.log('[SW] Suppression ancien cache:', key);
+              console.log("[SW] Suppression ancien cache:", key);
               return caches.delete(key);
             })
         );
@@ -63,15 +49,15 @@ self.addEventListener('activate', (event) => {
 // Stratégie : Network First avec fallback sur le cache
 // - Pour les API : tente le réseau, sinon erreur (pas de cache des données API)
 // - Pour les assets : tente le réseau, sinon cache
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
   // Ignorer les requêtes non-GET
-  if (request.method !== 'GET') return;
+  if (request.method !== "GET") return;
 
   // Ignorer les extensions Chrome et autres protocoles
-  if (!url.protocol.startsWith('http')) return;
+  if (!url.protocol.startsWith("http")) return;
 
   // Stratégie différente selon le type de ressource
   if (isApiRequest(url)) {
@@ -85,10 +71,7 @@ self.addEventListener('fetch', (event) => {
 
 // ===== Détection des requêtes API =====
 function isApiRequest(url) {
-  return (
-    url.hostname.includes('open-meteo.com') ||
-    url.hostname.includes('geocoding-api')
-  );
+  return url.hostname.includes("open-meteo.com") || url.hostname.includes("geocoding-api");
 }
 
 // ===== Stratégie : Network Only =====
@@ -98,16 +81,13 @@ async function networkOnly(request) {
     const response = await fetch(request);
     return response;
   } catch (error) {
-    console.log('[SW] Erreur réseau pour API:', error);
+    console.log("[SW] Erreur réseau pour API:", error);
     // Retourner une erreur JSON pour que l'app puisse l'afficher
-    return new Response(
-      JSON.stringify({ error: 'Pas de connexion internet' }),
-      {
-        status: 503,
-        statusText: 'Service Unavailable',
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ error: "Pas de connexion internet" }), {
+      status: 503,
+      statusText: "Service Unavailable",
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
 
@@ -133,27 +113,27 @@ async function cacheFirst(request) {
 
     return networkResponse;
   } catch (error) {
-    console.log('[SW] Erreur réseau pour asset:', request.url);
+    console.log("[SW] Erreur réseau pour asset:", request.url);
 
     // Si c'est une page HTML, retourner la page d'accueil en cache
-    if (request.headers.get('accept')?.includes('text/html')) {
-      const fallback = await caches.match('/index.html');
+    if (request.headers.get("accept")?.includes("text/html")) {
+      const fallback = await caches.match("/index.html");
       if (fallback) return fallback;
     }
 
     // Sinon, erreur
-    return new Response('Contenu non disponible hors-ligne', {
+    return new Response("Contenu non disponible hors-ligne", {
       status: 503,
-      statusText: 'Service Unavailable',
+      statusText: "Service Unavailable",
     });
   }
 }
 
 // ===== Messages depuis l'application =====
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
   }
 });
 
-console.log('[SW] Service Worker chargé');
+console.log("[SW] Service Worker chargé");
